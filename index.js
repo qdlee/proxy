@@ -21,9 +21,9 @@ log4js.configure({
     {
       type: 'file',
       filename: 'logs/cat.log',
-      category: 'cat'
-    }
-  ]
+      category: 'cat',
+    },
+  ],
 });
 
 const logger = log4js.getLogger('cat');
@@ -42,7 +42,11 @@ app.use(async (ctx, next) => {
   ctx.set('Access-Control-Allow-Origin', '*');
   ctx.set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
   ctx.set('Access-Control-Allow-Headers', 'accept, Content-Type');
-  await next();
+  if (ctx.method === 'OPTIONS') {
+    ctx.body = 'ok';
+  } else {
+    await next();
+  }
 });
 
 app.use(async (ctx, next) => {
@@ -59,8 +63,8 @@ app.use(
   body({
     multipart: true,
     formidable: {
-      uploadDir: path.resolve(__dirname, 'files')
-    }
+      uploadDir: path.resolve(__dirname, 'files'),
+    },
   })
 );
 
